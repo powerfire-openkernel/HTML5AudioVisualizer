@@ -16,7 +16,9 @@ $(document).ready(function () {
 
 
 function AudioVisualizer() {
-    //constants
+    // Number of Bars to draw on the screen.
+    // On 2's complement the nearest bigger number is 128.
+    // We interpolate between bins then make it 60 bins.
     this.numberOfBars = 60;
 
     //Rendering
@@ -223,20 +225,11 @@ AudioVisualizer.prototype.handleDrop = function () {
         var file = e.dataTransfer.files[0];
         var fileName = file.name;
 
-        $("#guide").text("Playing " + fileName);
-
-        var fileReader = new FileReader();
-
-        fileReader.onload = function (e) {
-            var fileResult = e.target.result;
-            visualizer.start(fileResult);
-        };
-
-        fileReader.onerror = function (e) {
-          debugger
-        };
-       
-        fileReader.readAsArrayBuffer(file);
+        // Load the entire file as ArrayBuffer.
+        new Reponse(file).arrayBuffer()
+        .then(arrBuf => {
+            visualizer.start(arrBuf);
+        }, console.error);
     }, false);
 }
 
